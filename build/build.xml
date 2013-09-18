@@ -1,0 +1,89 @@
+<project name="organization" default="jar" basedir="..">
+
+    <property name="plug.dir" value="${basedir}"/>
+    <property name="plug.lib.dir" value="${plug.dir}/lib"/>
+
+    <property name="classes.dir" value="${basedir}/build/classes"/>
+    <property name="src.dir" value="${plug.dir}/src"/>
+    <property name="target.dir" value="${plug.dir}/target"/>
+    <property name="target.lib.dir" value="${target.dir}/lib"/>
+    <property name="jar.file" value="${target.dir}/lib/OrganizationPlugin.jar"/>
+
+	<property name="spark.home" value="../../../"/>
+    <property name="spark.libs.dir" value="${spark.home}/target/build/lib"/>
+    <property name="build.classes" value="E:\workspace\spark\target\classes" />
+
+    <path id="lib.classpath">
+        <fileset dir="${plug.lib.dir}" includes="**/*.jar, **/*.zip"/>
+        <fileset dir="${spark.libs.dir}" includes="**/*.jar, **/*.zip"/>
+        <fileset dir="${spark.home}/build/lib/dist" includes="**/*.jar, **/*.zip"/>
+        <fileset dir="${spark.home}/build/lib" includes="**/*.jar, **/*.zip"/>
+    	<fileset dir="${spark.home}/build/lib/dist/ext" includes="**/*.jar, **/*.zip"/>
+        <fileset dir="${spark.libs.dir}/windows" includes="**/*.jar" />
+    	<pathelement location="${build.classes}"/>
+    </path>
+
+    <target name="clean" description="Cleans all build related output">
+        <delete file="${jar.file}"/>
+        <delete dir="${classes.dir}"/>
+        <delete dir="${target.dir}"/>
+    	<delete file="${spark.home}/target/build/plugins/OrganizationPlugin.jar" failonerror="false"/>
+    </target>
+
+    <target name="compile" description="Compiles plugin source">
+        <mkdir dir="${classes.dir}"/>
+        <javac srcdir="${src.dir}"
+               destdir="${classes.dir}"
+               classpathref="lib.classpath"
+               source="1.5"
+        	   encoding="UTF-8"
+               debug="true"
+               target="1.5"/>
+        <copy todir="${classes.dir}">
+		<fileset dir="${src.dir}" includes="**/*.png"/>
+		<fileset dir="${src.dir}" includes="**/*.gif"/>
+		<fileset dir="${src.dir}" includes="**/*.jpg"/>
+		<fileset dir="${src.dir}" includes="**/*.jpeg"/>
+        </copy>
+    </target>
+
+    <target name="jar" depends="clean,compile" description="Makes a plugin jar">
+        <mkdir dir="${target.dir}" />
+        <mkdir dir="${target.lib.dir}"/>
+
+        <copy todir="${target.dir}">
+            <fileset file="${plug.lib.dir}" includes="**/*.jar"/>
+        </copy>
+
+        <copy todir="${target.dir}">
+            <fileset file="${plug.dir}/plugin.xml"/>
+        </copy>
+
+    	<jar basedir="${classes.dir}" file="${jar.file}" update="false"/>
+    	
+    	<jar basedir="${target.dir}" file="${target.dir}/OrganizationPlugin.jar" update="false"/>
+    	
+        <copy todir="${spark.home}/target/build/plugins">
+            <fileset file="${target.dir}/OrganizationPlugin.jar"/>
+        </copy>  	
+    	
+    </target>
+
+    <target name="run" depends="jar" description="Makes a plugin jar and starts Spark with that plugin">
+        <copy todir="${basedir}/../spark/plugins"
+            file="${plug.dir}/OrganizationPlugin.jar" />
+
+        <property name="sparklib" value="${basedir}/../spark/lib" />
+        <java fork="true" classname="org.jivesoftware.Spark" dir="${basedir}/../spark/bin">
+            <classpath>
+                <fileset dir="${sparklib}">
+                    <include name="**/*.jar" />
+                    <include name="**/*.exe" />
+                    <include name="**/*.dll" />
+                </fileset>
+                <pathelement location="${basedir}/../spark/resources" />
+            </classpath>
+            <jvmarg value="-Dappdir=${basedir}/../spark" />
+        </java>
+    </target>
+</project>

@@ -1,0 +1,12 @@
+<!-- Define your plugins -->
+<plugin>
+    <name>Examples Plugin</name>
+    <version>1.0</version>
+    <author>Derek DeMoro</author>
+    <homePage>http://www.jivesoftware.com</homePage>
+    <email>derek@jivesoftware.com</email>
+    <description>Shows some simple ways to create plugins.</description>
+    <class>com.jivesoftware.spark.organization.OrganizationPlugin</class>
+    <minSparkVersion>2.5.0</minSparkVersion>
+</plugin>
+
