@@ -1,10 +1,4 @@
 package com.jivesoftware.spark.organization;
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import org.jdom.Document;
 import org.jdom.Element;
@@ -12,7 +6,10 @@ import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.xml.sax.InputSource;
 
-import com.jivesoftware.spark.organization.*;
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TreeXMLParse {
 

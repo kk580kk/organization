@@ -199,9 +199,10 @@ public class TreePanel extends JPanel {
          SimpleDateFormat CREDENTIAL_FORMAT = new SimpleDateFormat("yyyyMMddHHmm");
          Calendar now = Calendar.getInstance();
          String minuteStr = CREDENTIAL_FORMAT.format(now.getTime());
-         
+
          String cre = PasswordMD5.md5((minuteStr + password));
-         
+
+         //http://10.25.36.197:9080/efmpxNew/EFMPX/IM/IM02.jsp?serviceName=JQueryOrgTree&top=top&p_username=&p_password=&p_authen=CodedPwd
          urlStr = pathString + "&p_username=" + name + "&p_password=" + cre + "&p_authen=" + authenType;
 
          System.out.println("URL:"+urlStr);

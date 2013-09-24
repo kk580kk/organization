@@ -1,11 +1,6 @@
 package com.jivesoftware.spark.organization;
 
-import javax.swing.Icon;
-import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.MutableTreeNode;
-
-import org.jivesoftware.spark.ui.ContactItem;
 
 
 public class ExpandTreeNode extends DefaultMutableTreeNode {
