@@ -1,49 +1,25 @@
 package com.jivesoftware.spark.organization;
 
 import org.jivesoftware.MainWindow;
-import org.jivesoftware.resource.Res;
 import org.jivesoftware.resource.SparkRes;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smackx.filetransfer.FileTransferRequest;
 import org.jivesoftware.smackx.muc.MultiUserChat;
-import org.jivesoftware.spark.ChatManager;
-import org.jivesoftware.spark.SessionManager;
-import org.jivesoftware.spark.SparkManager;
-import org.jivesoftware.spark.UserManager;
-import org.jivesoftware.spark.Workspace;
+import org.jivesoftware.spark.*;
 import org.jivesoftware.spark.component.tabbedPane.SparkTabbedPane;
 import org.jivesoftware.spark.filetransfer.FileTransferListener;
 import org.jivesoftware.spark.filetransfer.SparkTransferManager;
 import org.jivesoftware.spark.plugin.ContextMenuListener;
 import org.jivesoftware.spark.plugin.Plugin;
 import org.jivesoftware.spark.search.SearchManager;
-import org.jivesoftware.spark.ui.ChatContainer;
-import org.jivesoftware.spark.ui.ChatRoom;
-import org.jivesoftware.spark.ui.ChatRoomButton;
-import org.jivesoftware.spark.ui.ChatRoomListenerAdapter;
-import org.jivesoftware.spark.ui.ContactItem;
-import org.jivesoftware.spark.ui.ContactItemHandler;
-import org.jivesoftware.spark.ui.ContactList;
-import org.jivesoftware.spark.ui.MessageFilter;
-import org.jivesoftware.spark.ui.PresenceListener;
-import org.jivesoftware.spark.ui.TranscriptWindow;
+import org.jivesoftware.spark.ui.*;
 
-import com.jivesoftware.spark.organization.TreePanel;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.Icon;
-import javax.swing.JButton;
-import javax.swing.JMenu;
-import javax.swing.JOptionPane;
-import javax.swing.JPopupMenu;
+import javax.swing.*;
 import javax.swing.text.BadLocationException;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
-import java.io.File;
 import java.util.Collection;
 
 /**
@@ -51,6 +27,9 @@ import java.util.Collection;
  * Spark.
  */
 public class OrganizationPlugin implements Plugin {
+
+    SearchMe searchMe ;
+    OrganizationPreference organizationPreference;
 
     /**
      * Called after Spark is loaded to initialize the new plugin.
@@ -60,9 +39,12 @@ public class OrganizationPlugin implements Plugin {
 
         // Add Tab
         addTabToSpark();
-   
-        SearchManager searchManager = SparkManager.getSearchManager();
-        searchManager.addSearchService(new SearchMe());
+
+        searchMe = new SearchMe();
+        SparkManager.getSearchManager().addSearchService(searchMe);
+
+        organizationPreference = new OrganizationPreference();
+        SparkManager.getPreferenceManager().addPreference(organizationPreference);
     }
 
     /**
@@ -70,7 +52,9 @@ public class OrganizationPlugin implements Plugin {
      * or releasing of resources.
      */
     public void shutdown() {
-
+        SparkManager.getWorkspace().getWorkspacePane().removeComponent(treePanel);
+        SparkManager.getPreferenceManager().removePreference(organizationPreference);
+        SparkManager.getSearchManager().removeSearchService(searchMe);
     }
 
     /**
@@ -82,6 +66,8 @@ public class OrganizationPlugin implements Plugin {
         return true;
     }
 
+    TreePanel treePanel;
+
     private void addTabToSpark() {
         // Get Workspace UI from SparkManager
         Workspace workspace = SparkManager.getWorkspace();
@@ -92,12 +78,13 @@ public class OrganizationPlugin implements Plugin {
         // Add own Tab.
         //  tabbedPane.addTab("BaoSight", null, new JButton("Hello"));
         //  tabbedPane.addTab(Res.getString("tab.tree"), SparkRes.getImageIcon(SparkRes.SMALL_ALL_CHATS_IMAGE), new TreePanel());
-          tabbedPane.addTab("", SparkRes.getImageIcon("ORGANAZATION"), new TreePanel());
+        treePanel = new TreePanel();
+        tabbedPane.addTab("", SparkRes.getImageIcon("ORGANAZATION"), treePanel);
         //  ORGANAZATION
     }
 
     private void addContactListListener() {
-    	
+
         // Get Workspace UI from SparkManager
         Workspace workspace = SparkManager.getWorkspace();
 
@@ -141,13 +128,12 @@ public class OrganizationPlugin implements Plugin {
 
         final ContextMenuListener listener = new ContextMenuListener() {
             public void poppingUp(Object object, JPopupMenu popup) {
-                final TranscriptWindow chatWindow = (TranscriptWindow)object;
+                final TranscriptWindow chatWindow = (TranscriptWindow) object;
                 Action clearAction = new AbstractAction() {
                     public void actionPerformed(ActionEvent actionEvent) {
                         try {
                             chatWindow.insert("My own text :)");
-                        }
-                        catch (BadLocationException e) {
+                        } catch (BadLocationException e) {
                             e.printStackTrace();
                         }
                     }
@@ -260,11 +246,11 @@ public class OrganizationPlugin implements Plugin {
         // Retrieve the Jabber ID for a user via the UserManager. This can
         // return null if the user is not in the ContactList or is offline.
         UserManager userManager = SparkManager.getUserManager();
-       // String jid = userManager.getJIDFromNickname("Matt");
-        
-      //  if (jid != null) {
-       //     transferManager.sendFile(new File("MyFile.txt"), jid);
-      //  }
+        // String jid = userManager.getJIDFromNickname("Matt");
+
+        //  if (jid != null) {
+        //     transferManager.sendFile(new File("MyFile.txt"), jid);
+        //  }
     }
 
     /**
@@ -383,13 +369,12 @@ public class OrganizationPlugin implements Plugin {
         // Get the service name you wish to use.
         try {
             serviceNames = MultiUserChat.getServiceNames(SparkManager.getConnection());
-        }
-        catch (XMPPException e) {
+        } catch (XMPPException e) {
             e.printStackTrace();
         }
 
         // Create the room.
-        ChatRoom chatRoom = chatManager.createConferenceRoom("BusinessChat", (String)serviceNames.toArray()[0]);
+        ChatRoom chatRoom = chatManager.createConferenceRoom("BusinessChat", (String) serviceNames.toArray()[0]);
 
         // If you wish to make this the active chat room.
 

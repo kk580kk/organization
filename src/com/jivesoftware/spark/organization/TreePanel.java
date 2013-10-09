@@ -650,7 +650,7 @@ public class TreePanel extends JPanel {
             is.close();
             connect.disconnect();
         } catch (MalformedURLException e) {
-            //TODO:这里需要做一些错误处理工作。这里是服务器连接不能错误内容。
+            //:这里需要做一些错误处理工作。这里是服务器连接不能错误内容。
             EventQueue.invokeLater(new Runnable() {
                 @Override
                 public void run() {
