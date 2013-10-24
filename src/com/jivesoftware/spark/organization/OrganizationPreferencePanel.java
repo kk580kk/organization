@@ -29,6 +29,9 @@ public class OrganizationPreferencePanel extends JPanel {
         contents.add(new JLabel(OrganizationResources.getString("organization.url")), new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.NORTHWEST, GridBagConstraints.BOTH, in, 0, 0));
         contents.add(contactsUrl, new GridBagConstraints(1, 1, 1, 1, 1.0, 0.0, GridBagConstraints.NORTHWEST, GridBagConstraints.BOTH, in, 0, 0));
 
+        contents.add(new JLabel(OrganizationResources.getString("service.url")), new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.NORTHWEST, GridBagConstraints.BOTH, in, 0, 0));
+        contents.add(groupUrl, new GridBagConstraints(1, 2, 1, 1, 1.0, 0.0, GridBagConstraints.NORTHWEST, GridBagConstraints.BOTH, in, 0, 0));
+
     }
 
     public String getContactsUrl() {

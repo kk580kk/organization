@@ -4,6 +4,8 @@ import org.jivesoftware.spark.PluginManager;
 import org.jivesoftware.spark.plugin.Plugin;
 import org.jivesoftware.spark.preference.Preference;
 import org.jivesoftware.spark.util.log.Log;
+import org.jivesoftware.sparkimpl.settings.local.LocalPreferences;
+import org.jivesoftware.sparkimpl.settings.local.SettingsManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,11 +20,13 @@ import java.awt.*;
  */
 public class OrganizationPreference implements Preference {
     private final static String ContactGPreferenceName = "组织构架联系人";
-    private OrganizationProperties _props;
+//    private OrganizationProperties _props;
+    private LocalPreferences _props;
     private OrganizationPreferencePanel _prefPanel;
 
     public OrganizationPreference() {
-        _props = OrganizationProperties.getInstance();
+//        _props = OrganizationProperties.getInstance(); //There are something wrong, read is good but write is bad
+        _props = SettingsManager.getLocalPreferences();
         try {
             if (EventQueue.isDispatchThread()) {
                 _prefPanel = new OrganizationPreferencePanel();
@@ -64,15 +68,20 @@ public class OrganizationPreference implements Preference {
     }
 
     public void load() {
-        _prefPanel.setContactsUrl(_props.getRemoteURL());
+        _prefPanel.setContactsUrl(_props.getWebURL());
+        _prefPanel.setGroupUrl(_props.getService());
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     PluginManager pluginManager;
 
     public void commit() {
-        _props.setRemoteURL(_prefPanel.getContactsUrl());
-        _props.save();
+        _props.setWebURL(_prefPanel.getContactsUrl());
+        _props.setService(_prefPanel.getGroupUrl());
+
+        getData();
+
+        SettingsManager.saveSettings();
 
         //刷新重载plugin
         pluginManager = PluginManager.getInstance();
